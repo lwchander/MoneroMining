@@ -174,7 +174,7 @@ sub CreatePoolSection{
     {
         my %resultHash;
 
-        %resultHash=(%poolExtra, %donation);
+        %resultHash=(%poolExtra);
         $PoolString.=HashToJson(%resultHash);
     }
     else
