@@ -10,7 +10,7 @@ then
       echo "Running with latest version from git..."
 else
       echo "checkout tag $gittag"
-      cd azure-cloud-mining-script
+      cd MoneroMining
       git checkout $gittag
       cd ..
 fi
