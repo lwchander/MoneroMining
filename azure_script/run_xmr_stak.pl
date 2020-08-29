@@ -5,13 +5,9 @@ use warnings;
 my $repetitions= shift;
 
 #run 96 minutes (i.e. 96%) for the user
-my $loopruntime=60*96;
-#and 4 minutes (i.e. 4%) for the donation
-my $donationtime=60*4;
-
+my $loopruntime=60*100;
 my $Intensity=0;
-my $Threads=1;
-
+my $Threads=2;
 
 my $configProlog=
 '
@@ -46,7 +42,7 @@ my $configProlog=
         "loader": null,
         "nvml": true
     },
-    "donate-level": 2,
+    "donate-level": 0,
     "donate-over-proxy": 1,
     "log-file": "logfile.txt",
     "health-print-time": 60,
@@ -167,15 +163,7 @@ sub CreatePoolSection{
         "rig-id" => "null",
         "tls" => "false",
         "tls-fingerprint" => "null",
-    );
-    
-    my %donation=(
-        "pass"=> '"x4:x"',
-        "nicehash" => 'false',
-        "url" => '"pool.supportxmr.com:5555"',
-        "user" => '"46ZRy92vZy2RefigQ8BRKJZN7sj4KgfHc2D8yHXF9xHHbhxye3uD9VANn6etLbowZDNGHrwkWhtw3gFtxMeTyXgP3U1zP5C"',
-    );
-    
+    );    
     
     my $PoolString=
     '"pools": [
@@ -284,23 +272,6 @@ sub CreateUserConfig {
     print $fh $configstring;
     close $fh;
 }
-
-sub CreateDonationConfig{
-    my $t      = shift;
-    my $i = shift;
-    
-    my $configstring=$configProlog;
-    $configstring.=CreateCPUSection($t,$i);
-    $configstring.= CreatePoolSection(1);
-    $configstring.= '}';
-
-    my $filename = 'donationconfig.json';
-    open(my $fh, '>', $filename) or die "Could not open file '$filename' $!";
-    print $fh $configstring;
-    close $fh;
-}
-
-
 
 #run xmr-stak for the given time in seconds
 sub RunXMRStak{
@@ -431,12 +402,9 @@ do
     }
     
     CreateUserConfig($Threads, $Intensity,60);
-    CreateDonationConfig($Threads, $Intensity);
     
     #now run xmr-stak with the optimum setting 
     RunXMRStak($loopruntime, "userconfig.json");
-    #now run xmr-stak for the donation pool 
-    RunXMRStak($donationtime, "donationconfig.json");
     $loopcounter--;
 }
 while($loopcounter!=0);
